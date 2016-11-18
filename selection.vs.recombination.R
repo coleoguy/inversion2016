@@ -1,16 +1,21 @@
-
-###############################################################
-## This file will run iterations to look at the effect of
-## recombination
-##############################################################
-setwd("~/Desktop/Dropbox/projects/fragileY/scripts")
 source("simFragileY.R")
 #             XfA, Xfa, XfAi, Xfai, XmA,  Xma,  XmAi, Xmai,  YA,    Ya,   YAi,  Yai
 genotypes <- c(.5, .5,   0,     0,  .25,  .25,    0,   0,   .25,   .25,    0,    0) 
+
+# the number of points to test
 sz <- 200
-iter <- 1000
+
+# the number of itterations to run some of the setting we are evaluating can
+# take as much as 3000 generations to fix/equilibrate
+iter <- 3000
+
+# vector of selection coefficients in males
 s.vec.m <- seq(from = 0, to = .5, length.out = sz)
+
+# vector of selection coefficients in females
 s.vec.f <- seq(from = 0, to = -.5, length.out = sz)
+
+# vector of recombination distances to evaluate
 r.vec <- seq(from = 0, to = .5, length.out = sz)
 u <- .01
 
@@ -19,6 +24,8 @@ u <- .01
 inv.ind.m <- c(7,     12)
 #           Xmai,   YAi
 inv.ind.f <- c(8,     11)
+
+# the starting frequency to use
 init.freq <- .001
 
 # we will be limiting ourselves to additive genetic architecture
@@ -28,7 +35,7 @@ results <- list()
 counter <- 1
 
   # setup result container
-  results.mw <- as.data.frame(matrix(,sz,sz))
+  results.mw <- as.data.frame(matrix(, sz, sz))
   colnames(results.mw) <- r.vec
   row.names(results.mw) <- s.vec.m
   results.fa <- results.fw <- results.ma <- results.mw
@@ -94,20 +101,24 @@ result[2, ] <- ConvertMatrix(results[[2]],tol=init.freq)
 result[3, ] <- ConvertMatrix(results[[3]],tol=init.freq)
 result[4, ] <- ConvertMatrix(results[[4]],tol=init.freq/3)
 
+# if no tested values fixed then ConvertMatrix returns NA
+# NA since we are only plotting to .25 set these to .3 so that
+# we dont indicate that we achieved fixation at any tested parameter
+# space.
 
-# NA are off the chart so set to .3
 result[1,is.na(result[1,])] <- .3
 result[2,is.na(result[2,])] <- .3
 result[3,is.na(result[3,])] <- .3
 result[4,is.na(result[4,])] <- .3
 
 
+# just for plotting ease lets pull these out
 mal.se <- as.numeric(result[1, ])
 mal.sa <- as.numeric(result[2, ])
 fem.se <- as.numeric(result[3, ])
 fem.sa <- as.numeric(result[4, ])
 
 x <- colnames(result)
-
-
 colvec <- c("#92c5de","#0571b0","#ca0020","#f4a582")
+
+# the variables mal.se, mal.sa, fem.se, and fem.sa are plotted in figure 4 of the manuscript
